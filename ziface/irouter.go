@@ -7,11 +7,11 @@ package ziface
 
 type IRouter interface {
 	// 在处理 conn 业务之前的钩子方法HOOK
-	PreHandle(request IRouter)
+	PreHandle(request IRequest)
 
 	// 在处理 conn 业务的主方法
-	Handle(request IRouter)
+	Handle(request IRequest)
 
 	// 在处理 conn 业务之后的钩子方法HOOK
-	PostHandle(request IRouter)
+	PostHandle(request IRequest)
 }
