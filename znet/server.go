@@ -5,7 +5,6 @@
 package znet
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"zinx-demo/ziface"
@@ -24,18 +23,21 @@ type Server struct {
 
 	// 服务器监听的端口
 	Port int
+
+	// 当前的 server 添加一个 router,server 注册的连接对应的处理业务
+	Router ziface.IRouter
 }
 
-// 定义当前客户端连接的所绑定handle Api(目前这个handler是写死的，以后优化应用，有用户来定义)
-func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
-	// 回显的功能
-	fmt.Println("[Conn Handler] CallBackToClient ...")
-	if _, err := conn.Write(data[:cnt]); err != nil {
-		fmt.Println("Read Buf Error: ", err)
-		return errors.New("CallBack")
-	}
-	return nil
-}
+// // 定义当前客户端连接的所绑定handle Api(目前这个handler是写死的，以后优化应用，有用户来定义)
+// func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+// 	// 回显的功能
+// 	fmt.Println("[Conn Handler] CallBackToClient ...")
+// 	if _, err := conn.Write(data[:cnt]); err != nil {
+// 		fmt.Println("Read Buf Error: ", err)
+// 		return errors.New("CallBack")
+// 	}
+// 	return nil
+// }
 
 func (s *Server) Start() {
 	fmt.Printf("[Start] Server Listenner at IP : %s, Port: %d, is Starting\n", s.IP, s.Port)
@@ -69,7 +71,7 @@ func (s *Server) Start() {
 			}
 
 			// 处理新连接的业务方法和 conn 进行绑定，得到我们的连接模块
-			dealConn := NewConnection(conn, cid, CallBackToClient)
+			dealConn := NewConnection(conn, cid, s.Router)
 			cid++
 
 			// 启动当前的连接业务处理
@@ -114,6 +116,11 @@ func (s *Server) Serve() {
 
 }
 
+func (s *Server) AddRouter(router ziface.IRouter) {
+	s.Router = router
+	fmt.Println("Add Router Succ!!!")
+}
+
 /*
 	初始化 server 的方法
 */
@@ -123,6 +130,7 @@ func NewServer(name string) ziface.IServer {
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      8999,
+		Router:    nil,
 	}
 	return s
 }
