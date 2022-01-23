@@ -36,7 +36,7 @@ type GlobalObj struct {
 var GlobObject *GlobalObj
 
 func (g *GlobalObj) Reload() {
-	data, err := ioutil.ReadFile("./conf/zinx.json")
+	data, err := ioutil.ReadFile("/Users/houchaoyue/Documents/demo/golang/zinx-demo-03/mydemo/zinx01/conf/zinx.json")
 	if err != nil {
 		fmt.Println("读取文件失败", err)
 	}
